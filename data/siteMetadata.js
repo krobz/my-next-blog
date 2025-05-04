@@ -22,7 +22,7 @@ const siteMetadata = {
   // instagram: 'https://www.instagram.com',
   medium: 'https://medium.com/@krobzh119',
   // bluesky: 'https://bsky.app/',
-  leetcode: 'https://leetcode.com/u/krobzh/',
+  // leetcode: 'https://leetcode.com/u/krobzh/',
   locale: 'en-US',
   // set to true if you want a navbar fixed to the top
   stickyNav: false,

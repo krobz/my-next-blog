@@ -11,7 +11,7 @@ import {
   Instagram,
   Medium,
   Bluesky,
-  Leetcode,
+  // Leetcode,
 } from './icons'
 
 const components = {
@@ -27,7 +27,7 @@ const components = {
   instagram: Instagram,
   medium: Medium,
   bluesky: Bluesky,
-  leetcode: Leetcode,
+  // leetcode: Leetcode,
 }
 
 type SocialIconProps = {
