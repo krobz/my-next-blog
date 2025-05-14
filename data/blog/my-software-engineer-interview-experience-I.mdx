@@ -1,0 +1,117 @@
+---
+title: 'My Software Engineer Interview Experience (I)'
+date: '2025-05-14'
+lastmod: '2025-05-14'
+tags: ['Interview', 'Algorithm', 'Singapore', 'Personal']
+draft: false
+summary: 'Mapping my SDE interview journey—screens, coding, design, and behavioral—with essential tips and lessons.'
+images: ['/static/images/twitter-card.png']
+---
+
+I've recently (maybe not that recently lol) interviewed with several companies in Singapore, and I'd like to share some of my experiences (currently most on LeetCode style questions) and insights gained from these interviews. I’ll continue to update this series.
+
+**Disclaimer:** I haven't signed any NDAs, and I will not mention any specific company names.
+
+I will start with a prominent Chinese software company.
+
+## Round 1: Algorithm Test
+
+The first round consisted of three algorithm problems. I don't recall the exact questions, but they weren't overly challenging. The last question involved dynamic programming (DP) with stringent test cases, making it difficult to pass all of them. I successfully solved about 70% of the cases, which allowed me to advance to the next round.
+
+## Round 2: Technical Interview
+
+The second round focused on technical questions based on my professional experience. Here are some highlights:
+
+1. **What's the iteration cycle of your project (e.g., monthly, bi-monthly)?**
+2. **How do you deploy applications on AWS and utilize serverless architecture?**
+3. **Why do you use Elasticsearch, and how do you ensure consistency between Elasticsearch and the database?**
+4. **How do you handle duplicate message consumption in message queues?**
+5. **How do you resolve Maven JAR dependency conflicts?**
+
+These questions were fairly standard. For question 3 specifically, I explained that the solution depends heavily on the particular use case. And I want to share a bit of question 5, I believe this is a bit common in real development:
+
+### Understanding and Resolving Maven Dependency Conflicts
+
+Maven picks one version per `groupId:artifactId` using:
+
+- **Shortest-Path Priority:** selects the version with the fewest hops.
+- **Declaration-Order Priority:** if tied, the earlier `pom.xml` entry wins.
+
+**Example:**
+
+```text
+Dependency path 1: A → B → C → X(1.5)  // distance = 3
+Dependency path 2: A → D → X(1.0)     // distance = 2
+```
+
+**Issue:** If module C needs X 1.5 but Maven picks X 1.0, you’ll see `NoClassDefFoundError` or `NoSuchMethodError`.
+
+**Solutions:**
+
+1. **Upgrade the direct parent** (e.g., D) to a version that brings in X 1.5.
+2. **Exclude the older X**: Generally, when resolving dependency conflicts, we prioritize the higher version, because most JARs maintain backward compatibility when upgraded:
+   ```xml
+    <dependency>
+        ......
+        <exclusions>
+        <exclusion>
+            <artifactId>x</artifactId>
+            <groupId>org.apache.x</groupId>
+        </exclusion>
+        </exclusions>
+    </dependency>
+   ```
+
+Additionally, there was one coding problem: [LeetCode 179: Largest Number](https://leetcode.com/problems/largest-number/description/). I found this question particularly interesting and suitable for interviews. The problem statement is:
+
+> Given a list of non-negative integers `nums`, arrange them to form the largest possible number and return it as a string.
+
+Initially, I got stuck for about 10 minutes, considering a monotonic stack and greedy approach. However, the key insight is straightforward yet subtle: for two numbers `a` and `b`, `a` should come before `b` if the concatenation `ab` is greater than `ba`. While this seems intuitively greedy, the rigorous proof is nuanced. A comprehensive explanation can be found [here](https://leetcode.cn/problems/largest-number/solutions/716725/gong-shui-san-xie-noxiang-xin-ke-xue-xi-vn86e/) (Chinese but this is the best proof I've seen).
+
+Here's my final solution:
+
+```java
+class Solution {
+    public String largestNumber(int[] nums) {
+        int n = nums.length;
+        Integer[] converted = new Integer[n];
+        for (int i = 0; i < n; i++) {
+            converted[i] = nums[i];
+        }
+
+        Arrays.sort(converted, (a, b) -> {
+            String s1 = String.valueOf(a) + String.valueOf(b);
+            String s2 = String.valueOf(b) + String.valueOf(a);
+            return s2.compareTo(s1);
+        });
+
+        if (converted[0] == 0) {
+            return "0";
+        }
+
+        StringBuilder ans = new StringBuilder();
+        for (int num : converted) {
+            ans.append(num);
+        }
+
+        return ans.toString();
+    }
+}
+```
+
+## Round 3: Behavioral Interview
+
+- **Focus:** Common behavioral questions
+- **Key Question:** “Why did you change your major from Mechanical Engineering to Computer Science?”
+- **Frequency:** Asked in about 80% of my interviews
+- **My Typical Responses:**
+  1. **Interest:** I participated in competitive programming during high school, developing a keen interest in computer science early on. Although I initially chose Mechanical Engineering for other reasons, my passion for computing remained strong.
+  2. **Natural Transition:** In Mechanical Engineering, I often worked with CAD and programmed in MATLAB and C++ on various projects, which made transitioning to software development smooth.
+  3. **From AI to Development:** While my Master’s focused on AI, I realized I needed more hands-on software development and implementation experience before diving deeper into AI research.
+
+In the end, I successfully cleared all of the interviews.
+
+## Lessons Learned
+
+- **Practice coding under time pressure.** Sometimes can get stuck in a non-hard problem, take it easy.
+- **Craft a compelling personal narrative.** Frame your background changes as a journey of passion and growth.

@@ -1,6 +1,8 @@
 {
-  "algorithm": 2,
+  "interview": 1,
+  "algorithm": 3,
+  "singapore": 1,
+  "personal": 3,
   "leetcode": 2,
-  "personal": 2,
   "work": 1
 }
