@@ -3,5 +3,6 @@
 import blog__myJourneyInDataStructuresAlgorithmLeetcodeP1Mdx from './blog__my-journey-in-data-structures-algorithm-leetcode-p1.mdx.json' with { type: 'json' }
 import blog__myJourneyInDataStructuresAlgorithmLeetcodeP2Mdx from './blog__my-journey-in-data-structures-algorithm-leetcode-p2.mdx.json' with { type: 'json' }
 import blog__mySoftwareEngineerInterviewExperienceIMdx from './blog__my-software-engineer-interview-experience-I.mdx.json' with { type: 'json' }
+import blog__mySoftwareEngineerInterviewExperienceIiMdx from './blog__my-software-engineer-interview-experience-II.mdx.json' with { type: 'json' }
 
-export const allBlogs = [blog__myJourneyInDataStructuresAlgorithmLeetcodeP1Mdx, blog__myJourneyInDataStructuresAlgorithmLeetcodeP2Mdx, blog__mySoftwareEngineerInterviewExperienceIMdx]
+export const allBlogs = [blog__myJourneyInDataStructuresAlgorithmLeetcodeP1Mdx, blog__myJourneyInDataStructuresAlgorithmLeetcodeP2Mdx, blog__mySoftwareEngineerInterviewExperienceIMdx, blog__mySoftwareEngineerInterviewExperienceIiMdx]

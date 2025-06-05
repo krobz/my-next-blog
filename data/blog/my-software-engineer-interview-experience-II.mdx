@@ -1,0 +1,188 @@
+---
+title: 'My Software Engineer Interview Experience (II)'
+date: '2025-06-05'
+lastmod: '2025-06-05'
+tags: ['Interview', 'Algorithm', 'Singapore', 'Personal']
+draft: false
+summary: 'Continuing my SDE interview journey with more technical challenges, system design questions, and valuable insights.'
+images: ['/static/images/twitter-card.png']
+---
+
+In my previous article, I shared my interview experience with a Chinese tech company. Today, I'll continue the journey by sharing my experiences with two other companies: one in the financial sector (Company A) and another in the travel industry (Company B). Both are well-known companies in their respective industries.
+
+## My Interview Experience
+
+### Company A (Financial Sector)
+
+I was contacted by a headhunter for this position. While the process moved quite fast, I have to be honest - this was the worst interview experience I've had so far. The interviewer was 10 minutes late and didn't ask many substantial questions. It felt rushed and unprofessional, which was disappointing given the company's reputation in the financial sector.
+
+### Company B (Travel Industry)
+
+This company had a more structured approach. They started with an online coding test featuring LeetCode-style problems. I can't recall the exact questions, but they were around medium difficulty level, and I managed to clear all of them successfully.
+
+What made this interview unique was the role itself - "Senior Intelligence Engineer." It sounded intriguing and different from typical SDE positions. The interview process was smooth, and the interviewer was genuinely nice and professional. However, they placed a heavy emphasis on security-related questions, which caught me a bit off guard.
+
+## Technical Questions & Solutions
+
+### 1. System Design: Multi-Platform API Gateway
+
+**Problem Statement:**
+A company has Android, iOS, and Web clients, each calling different API hostnames (e.g., `api1.example.com`, `api2.example.com`, `api3.example.com`). Behind these APIs, multiple microservices handle the actual business logic. Every microservice must know "who the caller is" for authentication and authorization. Additionally, these APIs expose data (pricing, search results, etc.) that external scrapers might harvest at scale.
+
+**Design Task:**
+Design an authentication and gateway layer that sits in front of all APIs and microservices. Your solution should address:
+
+1. **Stateless Authentication**: Issue and verify JWT tokens so any API hostname can authenticate user requests
+2. **Unified Gateway**: Route requests through a single API Gateway that validates tokens, enforces per-endpoint rate limits, and forwards traffic to the correct microservice
+3. **Anti-Scraping Protection**: Prevent large-scale scraping through rate limiting, throttling, and bot detection
+
+_Note: I won't dive into the complete solution here due to space constraints, but the key is to implement a centralized authentication service with distributed token validation and multi-layered protection mechanisms. I will update if time is allowed._
+
+### 2. Architecture Choice: DynamoDB + Elasticsearch
+
+**Context:** I was joined in the design of a system to store business files from customers, choosing DynamoDB + Elasticsearch as our data layer.
+
+**Why DynamoDB?**
+
+- **Eventual Consistency Tolerance**: Our system doesn't require strong consistency. If users upload a file and can't search it immediately, they can refresh and find it - this trade-off makes DynamoDB cost-effective
+- **Schema Flexibility**: DynamoDB's schema-less nature means zero downtime when adding or removing fields, which is crucial in our business scenario where schema changes are frequent
+
+**Why Elasticsearch?**
+
+- **Full-Text Search**: Provides powerful search capabilities based on Lucene's inverted index
+- **Complex Aggregations**: Enables sophisticated data analysis (histograms, top-N queries, grouping) that would be expensive in traditional databases. This is essential since each receipt can contain multiple files requiring aggregation
+
+### 3. Data Architecture: Duplication Strategy & Key Design
+
+**Data Duplication Approach:**
+We don't duplicate all data between DynamoDB and Elasticsearch - only what's necessary for search functionality. We use DynamoDB Streams with Lambda triggers to automatically index relevant data in Elasticsearch whenever DynamoDB records are updated.
+
+**Key Design:**
+
+- **DynamoDB Primary Key**: Composite key of `(linkId, userIdHash)`
+  - `linkId`: Uniquely identifies each document
+  - `userIdHash`: Ensures even data distribution across partitions
+- **Elasticsearch Index**: Contains only fields needed for text search and aggregations, while non-searchable metadata remains in DynamoDB
+
+### 4. Inverted Index: The Foundation of Full-Text Search
+
+**Why Inverted Index?**
+Traditional relational databases are row-oriented - searching across arbitrary columns is expensive. An inverted index flips this concept: for each unique term, I store a list of document IDs containing that term.
+
+**Structure Example:**
+
+```
+"hotel" → [doc1, doc3, doc5, ...]
+"flight" → [doc2, doc4, doc6, ...]
+```
+
+When querying "hotel + flight," the system quickly fetches both lists, intersects or ranks them, and returns the top matches. This approach is exponentially faster for text search scenarios.
+
+### 5. TF-IDF: The Ranking Algorithm
+
+I'll be honest - this wasn't my strongest area during the interview, so I had to research it afterward:
+
+**TF (Term Frequency)**: How often a term appears in a document. Higher frequency suggests greater relevance to that document.
+
+**IDF (Inverse Document Frequency)**: Logarithm of (total documents ÷ documents containing the term). Rare terms get higher IDF weights, while common terms like "the" get lower weights.
+
+**TF-IDF Score**: Typically TF × IDF (or variants like BM25) measures how important a term is in a specific document relative to the entire corpus. Higher combined scores rank higher in search results.
+
+### 6. Multi-Term Query Ranking
+
+**Question**: Given a query with multiple terms (e.g., "hotel flight"), how do you compute ranking?
+
+**Solution**: For each matching document, calculate a combined score using the sum or weighted sum of TF-IDF (or BM25) scores for each term ("hotel" and "flight"). Documents with higher combined scores rank higher in results.
+
+### 7. Prefix Search Implementation
+
+**Challenge**: Support prefix searches where users type "hot" and expect "hotel" suggestions.
+
+**Solution**: I configured a reverse edge n-gram analyzer. During indexing, each token is broken into partial prefixes:
+
+```
+"hotel" → ["h", "ho", "hot", "hote", "hotel"]
+```
+
+This allows instant matching of partial inputs to complete terms.
+
+### 8. Handling Misspelled Queries
+
+**Challenge**: Users type "htel" or "hetel" instead of "hotel".
+
+**Two Approaches:**
+
+1. **Autocomplete/Typeahead**: Show dropdown suggestions as users type "ho..." displaying "hotel," "hostel," etc., preventing mistakes before they happen
+2. **Fuzzy Query**: Configure Elasticsearch to allow edit distance of 1-2 characters. Searches for "htel" or "hetel" still match "hotel" because only one character is different or transposed
+
+I implemented the second approach for our use case.
+
+### 9. Search API Performance Metrics
+
+**Question**: How do you measure search API performance? Is average response time sufficient?
+
+**Answer**: Average latency alone can be misleading because it hides outliers - a few very slow requests get diluted by many fast ones.
+
+**Better Metrics:**
+
+- **P90 and P99 latencies**: Show how slow the tail requests are (90th/99th percentiles)
+- **Throughput**: Requests per second under load
+- **Error rates**: Failed requests percentage
+
+In our optimization, I improved average latency by 35% and P95 latency by 50%, indicating that even the slowest 5% of requests became significantly faster.
+
+### 10. Distributed Transactional Consistency Framework
+
+**Question**: How do you ensure data consistency across distributed microservices when handling complex business transactions?
+
+**My Response**: To be completely honest, I haven't implemented a full distributed transactional consistency framework in production yet. However, I understand the theoretical concepts and common patterns used in the industry.
+
+**Key Concepts I'm Familiar With**:
+
+#### 1. **Saga Pattern**
+
+This is widely used. The saga pattern handles distributed transactions by breaking them into smaller, manageable steps:
+
+- **Orchestration**: A central coordinator manages the transaction flow
+- **Choreography**: Services communicate through events without a central coordinator
+- Each step has a compensating transaction for rollback scenarios
+
+#### 2. **Event Sourcing**
+
+Instead of storing current state, you store all the events that led to that state:
+
+- All state changes are captured as immutable events
+- You can replay events to reconstruct system state
+- Provides natural audit trail and debugging capabilities
+
+#### 3. **Two-Phase Commit (2PC)**
+
+Traditional approach but has limitations in distributed systems:
+
+- Prepare phase: All participants vote to commit or abort
+- Commit phase: Coordinator tells everyone to commit or rollback
+- Problems: Single point of failure, blocking protocol
+
+#### 4. **Eventual Consistency**
+
+Accept that data might be temporarily inconsistent:
+
+- Design systems to handle inconsistency gracefully
+- Use techniques like conflict resolution and convergence
+- Often paired with compensation mechanisms
+
+#### 5. **Idempotency**
+
+Ensure operations can be safely retried:
+
+- Use unique request IDs to detect duplicates
+- Store operation results to handle retries
+- Critical for handling network failures and timeouts
+
+## Final Thoughts
+
+These interviews taught me valuable lessons about system design thinking and the importance of understanding the "why" behind architectural decisions. One key insight I gained: It's much better to have real industry experience when discussing solutions in system design interviews. If you're not familiar with a particular technology or approach, just be honest and say you're not familiar with it.
+
+Authenticity goes a long way in interviews. Interviewers can usually tell when you're trying to bluff your way through technical concepts you don't actually understand. Being upfront about your knowledge gaps while showing genuine curiosity to learn often leaves a better impression than pretending to know everything.
+
+The technical depth required for senior roles is significant, and there's always more to learn. These interview experiences reminded me that continuous learning and honest self-assessment are just as important as technical skills in building a successful engineering career.
