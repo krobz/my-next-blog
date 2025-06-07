@@ -22,6 +22,8 @@ export type Authors = {
   bluesky?: string | undefined
   linkedin?: string | undefined
   github?: string | undefined
+  resumePdf?: string | undefined
+  resumeGoogleDrive?: string | undefined
   layout?: string | undefined
   /** MDX file body */
   body: MDX

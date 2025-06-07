@@ -2,14 +2,30 @@ import { ReactNode } from 'react'
 import type { Authors } from 'contentlayer/generated'
 import SocialIcon from '@/components/social-icons'
 import Image from '@/components/Image'
+import ResumeButtons from '@/components/ResumeButtons'
+
+interface ExtendedAuthors extends Authors {
+  resumeGoogleDrive?: string
+}
 
 interface Props {
   children: ReactNode
-  content: Omit<Authors, '_id' | '_raw' | 'body'>
+  content: Omit<ExtendedAuthors, '_id' | '_raw' | 'body'>
 }
 
 export default function AuthorLayout({ children, content }: Props) {
-  const { name, avatar, occupation, company, email, twitter, bluesky, linkedin, github } = content
+  const {
+    name,
+    avatar,
+    occupation,
+    company,
+    email,
+    twitter,
+    bluesky,
+    linkedin,
+    github,
+    resumeGoogleDrive,
+  } = content
 
   return (
     <>
@@ -19,8 +35,8 @@ export default function AuthorLayout({ children, content }: Props) {
             About
           </h1>
         </div>
-        <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
-          <div className="flex flex-col items-center space-x-2 pt-8">
+        <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:space-y-0 xl:gap-x-8">
+          <div className="flex flex-col items-center pt-8">
             {avatar && (
               <Image
                 src={avatar}
@@ -40,6 +56,7 @@ export default function AuthorLayout({ children, content }: Props) {
               <SocialIcon kind="x" href={twitter} />
               <SocialIcon kind="bluesky" href={bluesky} />
             </div>
+            <ResumeButtons googleDriveUrl={resumeGoogleDrive} className="" />
           </div>
           <div className="prose dark:prose-invert max-w-none pt-8 pb-8 xl:col-span-2">
             {children}

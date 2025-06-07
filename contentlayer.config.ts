@@ -142,6 +142,8 @@ export const Authors = defineDocumentType(() => ({
     bluesky: { type: 'string' },
     linkedin: { type: 'string' },
     github: { type: 'string' },
+    resumePdf: { type: 'string' },
+    resumeGoogleDrive: { type: 'string' },
     layout: { type: 'string' },
   },
   computedFields,
