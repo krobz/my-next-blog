@@ -1,8 +1,9 @@
 {
-  "interview": 1,
-  "algorithm": 3,
-  "singapore": 1,
-  "personal": 3,
+  "interview": 2,
+  "algorithm": 4,
+  "singapore": 2,
+  "personal": 4,
+  "system-design": 1,
   "leetcode": 2,
   "work": 1
 }

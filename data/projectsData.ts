@@ -6,14 +6,12 @@ interface Project {
 }
 
 const projectsData: Project[] = [
-  // {
-  //   title: 'A Search Engine',
-  //   description: `What if you could look up any information in the world? Webpages, images, videos
-  //   and more. Google has many features to help you find exactly what you're looking
-  //   for.`,
-  //   imgSrc: '/static/images/google.png',
-  //   href: 'https://www.google.com',
-  // },
+  {
+    title: 'A 3D garment fitting system (Size guide in VIPSHOP)',
+    description: `A 3D garment fitting platform for VIPSHOP that analyzes purchase history to create virtual try-on models, reducing returns by providing accurate sizing.`,
+    imgSrc: '/static/images/3D_garment_system.png',
+    href: 'https://github.com/krobz/3d-garment-fitting-docs',
+  },
   // {
   //   title: 'The Time Machine',
   //   description: `Imagine being able to travel back in time or to the future. Simple turn the knob
