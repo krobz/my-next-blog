@@ -3,7 +3,7 @@ const siteMetadata = {
   title: "Krob's Blog",
   author: 'Huan Zhang (krob)',
   headerTitle: "Krob's blog",
-  description: 'Tech interviews, coding journey, and personal reflections on software development',
+  description: 'Tech, coding journey, and personal',
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://tailwind-nextjs-starter-blog.vercel.app',
