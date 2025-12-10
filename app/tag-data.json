@@ -1,6 +1,7 @@
 {
   "java": 1,
   "virtual-threads": 1,
+  "system-design": 2,
   "ai": 1,
   "llm": 1,
   "career": 1,
@@ -9,7 +10,6 @@
   "algorithm": 4,
   "singapore": 2,
   "personal": 4,
-  "system-design": 1,
   "leetcode": 2,
   "work": 1
 }
