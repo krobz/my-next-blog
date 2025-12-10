@@ -99,5 +99,16 @@ module.exports = () => {
 
       return config
     },
+    // Silence Turbopack warning for custom webpack config
+    experimental: {
+      turbo: {
+        rules: {
+          '*.svg': {
+            loaders: ['@svgr/webpack'],
+            as: '*.js',
+          },
+        },
+      },
+    },
   })
 }
