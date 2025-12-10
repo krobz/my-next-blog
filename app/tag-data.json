@@ -1,4 +1,10 @@
 {
+  "java": 1,
+  "virtual-threads": 1,
+  "ai": 1,
+  "llm": 1,
+  "career": 1,
+  "note-taken": 1,
   "interview": 2,
   "algorithm": 4,
   "singapore": 2,
