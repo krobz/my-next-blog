@@ -15,7 +15,7 @@ const projectsData: Project[] = [
   {
     title: 'TRPGHub - TRPG Session Management tool',
     description: `A mobile app connecting tabletop RPG game masters with players. Features service discovery, one-tap booking, split payments via QR codes, and real-time chat for session coordination.`,
-    imgSrc: '/static/images/trpghub.PNG',
+    imgSrc: '/static/images/trpghub.png',
     href: 'https://www.trpghub.com/',
   },
 ]
