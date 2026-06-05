@@ -1,0 +1,102 @@
+---
+title: More Than "Vibe Coding": 1B Tokens and an App That Never Launched
+date: '2026-05-31'
+lastmod: '2026-05-31'
+tags: ['Vibe Coding', 'Agentic Engineering', 'Startup', 'Product', 'Personal', 'Lessons']
+draft: true
+summary: 'A candid post-mortem of an app that never launched—covering not just vibe coding and engineering discipline, but co-founder communication, market research, region selection, and ICP filing.'
+images: ['/static/images/twitter-card.png']
+---
+
+> 正文底稿写在下面。下面的章节标题只是骨架，按需增删。
+
+In the middle of last year, one of friend post that she want to build an app that works for TRPGHub app, and need a partner who work on the tech part. The basic idea is that TRPGHub
+TRPGHub means the board game https://en.wikipedia.org/wiki/Board_game , where there are usually players and KPs. This is very popular in China. And the scenoario is that if some people want to
+play board game offline (of course, there are a lot platform for online board game matching), they need to find a KP. Usually they are communicating in QQ or Xian yu (somthing like carosell), and then they will pay for KP to host the game. But this mode is not very safe for both
+sides, there is no gurantee system. Sometimes kps are not showing 跑单, and players are not satified with kp and not pay the bill. So here comes to the need, we want to build an APP which can secure the transaction and can match players and kps,
+which to make the experience better. The reason why I want to join my friend is that my friend is deeply connected with the groupd of board game and she has resouces for the testing of the app. And we could have around 100 pepople in the first lauch if we can.
+And she used to be an artitst so she knows market well.
+
+Then I have a discussion with here and I agree her thought and initial framework. Then we divide the responsibility, I was in charge of technical part and my friend is in charge of product and market, another partner is in charge of
+reuglation and product.
+
+ok, how it started.
+We need a working pipeline first, something like Jira ticket, my friend create prototype and requirement, also UI design. Then I will finish it by some estimation time. But I found Jira is too heavy for us,
+so we are using shared online sheet. We have the weekly meeting to catch up the progess.
+
+Tech from 0 to 1:
+This is first time that I am handling indepent development from scratch just myself. Since vibe coding is very popular that time, acutally it's not vibe coding because I still have a lot of background in that. Just that some areas maybe I am not very
+familar with. Our target is an Andriod APP. I did several things to get the prototype
+
+1. System design and tech selection. Yes, this is a real system design, I ask AI a lot for the best practice of the design. My feeling is that if I am not an expert in system desgin, it's a bit hard for me to review the design
+   given by AI models. This is the first problem I found for vibe coding, coz the cost is very very high if change the design. I am not say should find the best design in the begining but should at leaset find an optimal one in real industrial.
+   For tech selection like laguage choose, I choose what I familar, java and spring boot and react native (consiering to IOS for future also).
+2. Getting the main function work with short time, because we want to see the effect quickly and then consierting some other features, here I use a lot tokens to create the codebase and build features based on requirement. It's pretty fast with agent in this step.
+
+We get a prototype (can call toy also, because I even use hariki for the simulated backend), we validate some core function and re-analyzes to optimize it.
+
+Make it could be used by users
+After prototype, I think we are in some iteration loop. There is another very important point from toy project to real app. It is how I deploy and maintain it.
+Coz I am familar with AWS, so I choose to deploy backend in Cloud. But our App is mainly in China, then I choose Aliyun. A lot time spent here because some processes are really diff in
+Aliyun. A lot of tokens are taken for back and forth conversation by agent.
+
+In this stage, there are a lot of issues raised by our product people or me and I spent a lot time fixing them. Yes, I didn't include much test function due to time limitation. But Actually
+I sepdn far more time to fix some stupid issue. There are also a thing is not easy to handle, testing on cell phones (andriod). Coz initially I don't have any andriod phong, so I am testing in
+andiord studio. The software env takes a lot time to setup since I am totally new for it. Acutally quite a lot suggestion given by agent is not correct so I have to re-build again and again.
+After 1 month, I got an Andiord Phone for testing but every test still takes some time coz to run .\gradlew.bat assembleRelease
+adb install -r -d.
+
+To be honest, it's not easy to get an app to be tested by users, especially you assume the core function are working, in our app, it's include logging, ordering service, Chat, release new services, searching, payment, notification. no
+to say some other minor function. Taking Chat for example, initially I think I can build some wheels coz in system design book, they told about websocket + kafka. But to use it in real app, it's totally diff story, to consider the develop time and
+stability, don't have much time to build it from sracth, so after 2 weeks struggling, I decided to use the existing chat solultion called openIM.
+Also, for notification part, it looks that I can build one from sracth but still it's actual very complex thing compared what is shown in system design book or website. So I use JPush which is also a mature solution.
+
+So in this development, I feel it's pretty hard to make the decision just based on vibe coding if you are not know this well.
+
+Why it is not released
+
+okay, there are lot of reasons, far beyond tech.
+
+1. Budget control
+   Although we have some budget in the inital discussion, but it's still can have some issue in budget, especially I use cloud service without having too many users.
+   CPU, memory, storage takes money, no to say about the JPush. I heard that some people spent thosands of USD before they release their personal app. So now I think it is not
+   business correct, at least we should verify whether we have enough business need. Otherwise waste a lot of money.
+
+2. Regulation regulation and regulation
+   Market selection is pretty pretty important, I would say andiord is more complex than IOS, ans China is more complex compared to other countires, especially we have 2 high risk
+   features chat and payment (initially we want). It can takes at least 3 months for use to get it ready in Application store. And we need to prepare the software patent, ICP and EDI.
+   The ICP and EDI is pretty heavy for us, we need to register a company or find another company. The cost is very very high. So maybe can start from a easier market first.
+
+3. Working With a Co-Founder
+   This part is related to how our team works. I think we do okay in this especially we have some confusion. Although it's a bit hard for us to have weekly coz everyone is part time and
+   has their own thing. Maybe should also consider a better way that how we catch up.
+
+So for me the task is
+
+## The Idea and What I Set Out to Build
+
+<!-- TODO: 介绍 app（TRPGHub）是什么、为什么想做 -->
+
+## More Than "Vibe Coding": How I Actually Built It
+
+<!-- TODO: 我以为在做 agentic engineering（架构、分层、文档），但跳过了测试/eval/根因调试 -->
+
+## Working With a Co-Founder
+
+<!-- TODO: 合伙人沟通中的摩擦与教训 -->
+
+## Market Research (or the Lack of It)
+
+<!-- TODO: 市场调研做得不够 / 需求验证的反思 -->
+
+## Choosing the Wrong Region
+
+<!-- TODO: 地区选择的考量与失误 -->
+
+## The ICP Filing Reality Check
+
+<!-- TODO: 办 ICP 备案踩的坑、合规成本 -->
+
+## What I Learned
+
+<!-- TODO: 跨维度的总结与给读者的建议 -->
