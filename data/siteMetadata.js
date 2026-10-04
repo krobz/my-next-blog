@@ -1,7 +1,7 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
   title: "Krob's Blog",
-  author: 'Huan Zhang (krob)',
+  author: 'krob Zhang',
   headerTitle: "Krob's blog",
   description: 'Tech, coding journey, and personal',
   language: 'en-us',
