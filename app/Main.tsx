@@ -3,24 +3,26 @@ import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
 import NewsletterForm from 'pliny/ui/NewsletterForm'
-import AskKrob from '@/components/ask/AskKrob'
 
 const MAX_DISPLAY = 5
 
 export default function Home({ posts, author }) {
   return (
     <>
-      <section className="space-y-6 pt-6 pb-12">
-        <div className="space-y-2">
-          <h1 className="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-5xl md:leading-14 dark:text-gray-100">
-            {author?.name ?? siteMetadata.author}
-          </h1>
-          <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
-            {author?.occupation && author?.company && `${author.occupation} at ${author.company}. `}
-            Ask my AI twin about my work, projects and writing.
-          </p>
-        </div>
-        <AskKrob />
+      <section className="space-y-3 pt-6 pb-10">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl md:text-5xl dark:text-gray-100">
+          {author?.name ?? siteMetadata.author}
+        </h1>
+        <p className="max-w-2xl text-lg leading-7 text-gray-500 dark:text-gray-400">
+          {author?.occupation && author?.company && `${author.occupation} at ${author.company}. `}
+          Building backend systems & agentic AI. Read my writing below, or{' '}
+          <Link
+            href="/about#ask"
+            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 decoration-primary-500/40 hover:decoration-primary-500 underline underline-offset-4"
+          >
+            ask my AI twin &rarr;
+          </Link>
+        </p>
       </section>
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         <div className="space-y-2 pt-6 pb-8 md:space-y-5">

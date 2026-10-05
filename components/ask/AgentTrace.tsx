@@ -121,21 +121,46 @@ export default function AgentTrace({ parts, running, metadata }: Props) {
 
   return (
     <div className="font-mono text-xs text-gray-500 dark:text-gray-400">
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        disabled={steps.length === 0}
-        aria-expanded={open}
-        className="flex items-center gap-2 hover:text-gray-700 disabled:cursor-default dark:hover:text-gray-200"
-      >
-        {running ? (
-          <span className="bg-primary-500 inline-block h-1.5 w-1.5 animate-pulse rounded-full" />
-        ) : (
-          <span aria-hidden>✓</span>
-        )}
-        <span>{summary}</span>
-        {steps.length > 0 && <span aria-hidden>{open ? '▾' : '▸'}</span>}
-      </button>
+      {running ? (
+        <div className="bg-primary-500/10 text-primary-600 dark:text-primary-400 border-primary-500/20 inline-flex items-center gap-2 rounded-full border px-3 py-1 shadow-xs">
+          <span className="relative flex h-2 w-2">
+            <span className="bg-primary-400 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
+            <span className="bg-primary-500 relative inline-flex h-2 w-2 rounded-full"></span>
+          </span>
+          <span className="flex items-center font-medium">
+            {current?.label ?? 'Thinking'}
+            <span className="ml-1.5 inline-flex items-center gap-0.5">
+              <span className="h-1 w-1 animate-bounce rounded-full bg-current [animation-delay:-0.3s]" />
+              <span className="h-1 w-1 animate-bounce rounded-full bg-current [animation-delay:-0.15s]" />
+              <span className="h-1 w-1 animate-bounce rounded-full bg-current" />
+            </span>
+          </span>
+          {steps.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setOpen((value) => !value)}
+              aria-expanded={open}
+              className="ml-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              {open ? '▾' : '▸'}
+            </button>
+          )}
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          disabled={steps.length === 0}
+          aria-expanded={open}
+          className="flex items-center gap-2 transition-colors hover:text-gray-700 disabled:cursor-default dark:hover:text-gray-200"
+        >
+          <span aria-hidden className="font-bold text-emerald-500">
+            ✓
+          </span>
+          <span>{summary}</span>
+          {steps.length > 0 && <span aria-hidden>{open ? '▾' : '▸'}</span>}
+        </button>
+      )}
       {open && (
         <ol className="mt-2 space-y-2 border-l border-gray-200 pl-3 dark:border-gray-700">
           {steps.map((step) => (

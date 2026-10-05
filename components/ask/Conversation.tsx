@@ -22,6 +22,16 @@ function errorMessage(error: Error) {
   return 'Something went wrong. Please try again.'
 }
 
+function ShimmerSkeleton() {
+  return (
+    <div className="animate-pulse space-y-3 pt-1">
+      <div className="h-3.5 w-4/5 rounded-md bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-700/60 dark:to-gray-800" />
+      <div className="h-3.5 w-full rounded-md bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-700/60 dark:to-gray-800" />
+      <div className="h-3.5 w-3/5 rounded-md bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-700/60 dark:to-gray-800" />
+    </div>
+  )
+}
+
 function AssistantTurn({ message, running }: { message: AskUIMessage; running: boolean }) {
   const text = message.parts
     .flatMap((part) => (part.type === 'text' ? [part.text] : []))
@@ -60,6 +70,7 @@ function AssistantTurn({ message, running }: { message: AskUIMessage; running: b
   return (
     <div className="space-y-4">
       <AgentTrace parts={message.parts} running={running} metadata={message.metadata} />
+      {running && !text && widgets.length === 0 && <ShimmerSkeleton />}
       {text && <Markdown text={text} />}
       {widgets}
       {sources.size > 0 && (
@@ -125,7 +136,12 @@ export default function Conversation({ initialQuestion, onReset }: Props) {
         )
       )}
 
-      {status === 'submitted' && last?.role === 'user' && <AgentTrace parts={[]} running />}
+      {status === 'submitted' && last?.role === 'user' && (
+        <div className="space-y-4">
+          <AgentTrace parts={[]} running />
+          <ShimmerSkeleton />
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center gap-3 text-sm text-red-500">

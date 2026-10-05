@@ -1,7 +1,7 @@
 import GithubSlugger, { slug as slugify } from 'github-slugger'
 import { allAuthors, allBlogs } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
-import { skills, timeline, type TimelineItem } from '@/data/profile'
+import { interests, skills, timeline, type TimelineItem } from '@/data/profile'
 
 export type PostMeta = {
   slug: string
@@ -336,6 +336,9 @@ export function getProfileContext() {
     '',
     'Skills:',
     ...Object.entries(skills).map(([group, items]) => `- ${group}: ${items.join(', ')}`),
+    '',
+    'Interests & hobbies:',
+    ...interests.map((item) => `- ${item}`),
     '',
     'Links:',
     `- Email: ${siteMetadata.email}`,

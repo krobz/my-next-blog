@@ -47,3 +47,9 @@ export const skills: Record<string, string[]> = {
   'Cloud & infra': ['Cloud-native architecture', 'Kubernetes'],
   AI: ['Agentic AI', 'AI-assisted development workflows'],
 }
+
+export const interests: string[] = [
+  'Outdoor distance running',
+  'Technical writing and post-mortems',
+  'Autonomous agent workflows and distributed backend architectures',
+]

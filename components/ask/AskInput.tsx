@@ -34,21 +34,27 @@ export default function AskInput({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onFocus={onFocus}
-        placeholder={placeholder}
+        disabled={busy}
+        placeholder={busy ? 'Thinking…' : placeholder}
         maxLength={MAX_QUESTION_CHARS}
         aria-label="Ask a question about krob"
-        className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-xl border border-gray-300 bg-white py-3.5 pr-14 pl-4 text-base text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-1 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+        className={`w-full rounded-xl border py-3.5 pr-14 pl-4 text-base shadow-sm transition-all duration-200 focus:outline-none ${
+          busy
+            ? 'border-primary-500/50 ring-primary-500/15 placeholder:text-primary-500/60 cursor-not-allowed bg-gray-50/60 text-gray-500 ring-2 dark:bg-gray-900/60 dark:text-gray-400'
+            : 'focus:border-primary-500 focus:ring-primary-500 border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:ring-1 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100'
+        }`}
       />
       {busy && onStop ? (
         <button
           type="button"
           onClick={onStop}
-          aria-label="Stop"
-          className="hover:text-primary-500 absolute top-1/2 right-2 -translate-y-1/2 rounded-lg p-2 text-gray-500"
+          aria-label="Stop generation"
+          title="Stop"
+          className="hover:text-primary-500 absolute top-1/2 right-2 -translate-y-1/2 rounded-lg p-2 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-200"
         >
-          <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-            <rect x="7" y="7" width="10" height="10" rx="1.5" />
-          </svg>
+          <span className="flex h-5 w-5 items-center justify-center rounded-sm bg-gray-200/80 dark:bg-gray-700/80">
+            <span className="h-2 w-2 animate-pulse rounded-[1px] bg-gray-700 dark:bg-gray-200" />
+          </span>
         </button>
       ) : (
         <button

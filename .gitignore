@@ -49,3 +49,7 @@ yarn-error.log*
 .vercel
 .env*
 !.env.example
+tsconfig.tsbuildinfo
+.agents/
+skills-lock.json
+

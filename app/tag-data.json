@@ -1,15 +1,20 @@
 {
+  "vibe-coding": 1,
+  "agentic-engineering": 1,
+  "startup": 1,
+  "product": 1,
+  "personal": 5,
+  "lessons": 1,
+  "java": 1,
+  "virtual-threads": 1,
+  "system-design": 2,
   "ai": 1,
   "llm": 1,
   "career": 1,
   "note-taken": 1,
-  "java": 1,
-  "virtual-threads": 1,
-  "system-design": 2,
-  "algorithm": 4,
-  "leetcode": 2,
-  "personal": 4,
-  "work": 1,
   "interview": 2,
-  "singapore": 2
+  "algorithm": 4,
+  "singapore": 2,
+  "leetcode": 2,
+  "work": 1
 }

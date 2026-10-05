@@ -2,9 +2,10 @@
 
 import blog__aiThoughtsIMdx from './blog__AI-thoughts-I.mdx.json' with { type: 'json' }
 import blog__javaVirtualThreadMdx from './blog__java-virtual-thread.mdx.json' with { type: 'json' }
+import blog__moreThanVibeCodingWhyMyAppNeverMadeItToLaunchMdx from './blog__more-than-vibe-coding-why-my-app-never-made-it-to-launch.mdx.json' with { type: 'json' }
 import blog__myJourneyInDataStructuresAlgorithmLeetcodeP1Mdx from './blog__my-journey-in-data-structures-algorithm-leetcode-p1.mdx.json' with { type: 'json' }
 import blog__myJourneyInDataStructuresAlgorithmLeetcodeP2Mdx from './blog__my-journey-in-data-structures-algorithm-leetcode-p2.mdx.json' with { type: 'json' }
 import blog__mySoftwareEngineerInterviewExperienceIMdx from './blog__my-software-engineer-interview-experience-I.mdx.json' with { type: 'json' }
 import blog__mySoftwareEngineerInterviewExperienceIiMdx from './blog__my-software-engineer-interview-experience-II.mdx.json' with { type: 'json' }
 
-export const allBlogs = [blog__aiThoughtsIMdx, blog__javaVirtualThreadMdx, blog__myJourneyInDataStructuresAlgorithmLeetcodeP1Mdx, blog__myJourneyInDataStructuresAlgorithmLeetcodeP2Mdx, blog__mySoftwareEngineerInterviewExperienceIMdx, blog__mySoftwareEngineerInterviewExperienceIiMdx]
+export const allBlogs = [blog__aiThoughtsIMdx, blog__javaVirtualThreadMdx, blog__moreThanVibeCodingWhyMyAppNeverMadeItToLaunchMdx, blog__myJourneyInDataStructuresAlgorithmLeetcodeP1Mdx, blog__myJourneyInDataStructuresAlgorithmLeetcodeP2Mdx, blog__mySoftwareEngineerInterviewExperienceIMdx, blog__mySoftwareEngineerInterviewExperienceIiMdx]
