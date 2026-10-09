@@ -1,6 +1,7 @@
 import { tool } from 'ai'
 import { z } from 'zod'
 import { getTimeline, listPosts, readPost, searchPosts } from './knowledge'
+import { createKnowledgeSession } from './rag/request-tools'
 
 export const tools = {
   searchPosts: tool({
@@ -48,4 +49,25 @@ export const tools = {
   }),
 }
 
-export type AskTools = typeof tools
+export function createTools(session: ReturnType<typeof createKnowledgeSession>) {
+  return { ...tools, ...(session.enabled ? { searchKnowledge: session.searchKnowledge } : {}) }
+}
+
+export type AskTools = ReturnType<typeof createTools>
+
+// Reconstruct widgets using server-owned public records; never relay arbitrary tool payloads.
+export function publicWidget(name: string, output: unknown) {
+  if (name === 'showTimeline') {
+    const candidate = output as { items?: { org?: string; kind?: string }[] }
+    return {
+      items: getTimeline().filter((item) =>
+        candidate?.items?.some((i) => i.org === item.org && i.kind === item.kind)
+      ),
+    }
+  }
+  const candidate = output as { posts?: { slug?: string }[] }
+  const slugs = Array.isArray(candidate?.posts)
+    ? candidate.posts.flatMap((p) => (typeof p?.slug === 'string' ? [p.slug] : [])).slice(0, 6)
+    : []
+  return { posts: slugs.length ? listPosts({ slugs, limit: 6 }) : [] }
+}

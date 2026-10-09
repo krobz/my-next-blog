@@ -24,6 +24,10 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Check AI twin source
-        run: npx eslint app/Main.tsx app/page.tsx app/api/chat components/ask lib/ai data/profile.ts
+        run: npx eslint app/Main.tsx app/page.tsx app/api/chat app/api/internal/rag components/ask lib/ai data/profile.ts scripts/rag.ts scripts/eval-rag.ts scripts/smoke-rag.ts tests/rag-*.ts
+      - name: RAG regression tests (synthetic data, no API key)
+        run: npm run test:rag
       - name: Build and typecheck
         run: npm run build
+      - name: Private RAG artifacts stay out of deployments
+        run: npm run check:rag-artifacts

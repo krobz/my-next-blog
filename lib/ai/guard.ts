@@ -62,6 +62,11 @@ export async function recordUsage(usage: LanguageModelUsage) {
   if (!redis) return
   const { input, output } = askConfig.usdPerMillionTokens
   const usd = ((usage.inputTokens ?? 0) * input + (usage.outputTokens ?? 0) * output) / 1_000_000
+  await recordExternalUsage(usd)
+}
+
+export async function recordExternalUsage(usd: number) {
+  if (!redis || !Number.isFinite(usd) || usd <= 0) return
   const key = budgetKey()
   await redis
     .pipeline()

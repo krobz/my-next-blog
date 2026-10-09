@@ -10,7 +10,9 @@ import { z } from 'zod'
 import { askConfig, MAX_QUESTION_CHARS } from '@/lib/ai/config'
 import { checkGuards, recordUsage } from '@/lib/ai/guard'
 import { getInstructions } from '@/lib/ai/prompt'
-import { tools, type AskTools } from '@/lib/ai/tools'
+import { createTools, publicWidget, type AskTools } from '@/lib/ai/tools'
+import { createKnowledgeSession } from '@/lib/ai/rag/request-tools'
+import { publicStream } from '@/lib/ai/rag/public-stream'
 import type { AskUIMessage } from '@/lib/ai/types'
 
 export const maxDuration = 60
@@ -82,34 +84,44 @@ export async function POST(req: Request) {
   if (!guard.ok) return errorResponse(guard.status, guard.message)
 
   const startedAt = Date.now()
+  const session = createKnowledgeSession(req.signal)
+  const history = compactHistory(messages)
   const result = streamText({
     model: openai(askConfig.model),
     instructions: getInstructions(),
-    messages: await convertToModelMessages(compactHistory(messages)),
-    tools,
+    messages: await convertToModelMessages(history),
+    tools: createTools(session),
     stopWhen: isStepCount(askConfig.maxSteps),
     maxOutputTokens: askConfig.maxOutputTokens,
     reasoning: 'low',
     abortSignal: req.signal,
     onStepEnd: async ({ usage }) => {
-      await recordUsage(usage).catch((error) =>
-        console.error('[ask] failed to record usage', error)
-      )
+      await recordUsage(usage).catch((error) => console.error('[ask] failed to record usage'))
     },
   })
 
   return createUIMessageStreamResponse({
     stream: toUIMessageStream<AskTools, AskUIMessage>({
       stream: result.stream,
-      originalMessages: messages,
+      originalMessages: history,
+      sendReasoning: false,
       messageMetadata: ({ part }) =>
         part.type === 'finish'
           ? { durationMs: Date.now() - startedAt, totalTokens: part.totalUsage.totalTokens }
           : undefined,
       onError: (error) => {
-        console.error('[ask] stream error', error)
+        // Class names only: SDK errors can embed complete private tool inputs in their messages.
+        const name = error instanceof Error ? error.name : 'UnknownError'
+        const cause =
+          error instanceof Error && error.cause instanceof Error ? error.cause.name : undefined
+        console.error('[ask] stream error', {
+          name: /^[A-Za-z0-9_]+$/.test(name) ? name : 'UnknownError',
+          cause: cause && /^[A-Za-z0-9_]+$/.test(cause) ? cause : undefined,
+        })
         return 'Something went wrong while answering. Please try again.'
       },
-    }),
+    }).pipeThrough(
+      publicStream({ citations: session.citations, summary: session.summary, publicWidget })
+    ),
   })
 }
