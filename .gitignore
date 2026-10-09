@@ -53,3 +53,7 @@ tsconfig.tsbuildinfo
 .agents/
 skills-lock.json
 
+# Private RAG sources, immutable snapshots, vectors and evaluation answers
+.rag-private/
+.rag-evals/
+

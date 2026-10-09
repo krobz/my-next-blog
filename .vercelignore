@@ -1,0 +1,9 @@
+.rag-private/
+.rag-evals/
+services/reranker/
+.env*
+!.env.example
+node_modules/
+.next/
+.git/
+.agents/

@@ -9,6 +9,7 @@ import AskInput from './AskInput'
 import Markdown from './Markdown'
 import PostCards from './PostCards'
 import Timeline from './Timeline'
+import type { PublicCitation } from '@/lib/ai/rag/types'
 
 function errorMessage(error: Error) {
   if (APICallError.isInstance(error)) {
@@ -57,6 +58,11 @@ function AssistantTurn({ message, running }: { message: AskUIMessage; running: b
   })
 
   const sources = new Map<string, string>()
+  const privateCitations = message.parts.flatMap((part) =>
+    part.type === 'data-citations' && Array.isArray(part.data)
+      ? (part.data as PublicCitation[])
+      : []
+  )
   for (const part of message.parts) {
     if (
       part.type === 'tool-getPost' &&
@@ -73,6 +79,23 @@ function AssistantTurn({ message, running }: { message: AskUIMessage; running: b
       {running && !text && widgets.length === 0 && <ShimmerSkeleton />}
       {text && <Markdown text={text} />}
       {widgets}
+      {privateCitations.length > 0 && (
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+          <span>Sources</span>
+          {privateCitations.map((c) =>
+            c.url ? (
+              <a key={c.id} href={c.url} className="underline">
+                [{c.id}] {c.title}
+              </a>
+            ) : (
+              <span key={c.id} title={c.section}>
+                [{c.id}] {c.title}
+                {c.section ? ` · ${c.section}` : ''}
+              </span>
+            )
+          )}
+        </div>
+      )}
       {sources.size > 0 && (
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
           <span>Sources</span>

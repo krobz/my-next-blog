@@ -69,6 +69,10 @@ module.exports = () => {
     basePath,
     reactStrictMode: true,
     trailingSlash: false,
+    // Private local snapshots are development state, never deployment assets.
+    outputFileTracingExcludes: {
+      '/*': ['./.rag-private/**/*', './.rag-evals/**/*'],
+    },
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],

@@ -20,6 +20,24 @@ function toSteps(parts: Part[]): Step[] {
   return parts.flatMap<Step>((part, i) => {
     const key = `${part.type}-${i}`
     switch (part.type) {
+      case 'data-retrieval': {
+        const data = part.data as {
+          searches?: number
+          candidates?: number
+          durationMs?: number
+          degraded?: boolean
+          reranked?: boolean
+        }
+        if (!data.searches) return []
+        return [
+          {
+            key,
+            label: 'Searched knowledge',
+            detail: `${data.candidates ?? 0} candidates · ${data.durationMs ?? 0}ms · ${data.reranked ? 'reranked' : 'fusion ranking'}${data.degraded ? ' · degraded' : ''}`,
+            state: 'done',
+          },
+        ]
+      }
       case 'reasoning': {
         const text = part.text.trim()
         if (!text) return []
