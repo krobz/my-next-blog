@@ -57,6 +57,12 @@ Parent expansion rechecks eligibility, merges the same parent once, and respects
 
 Evidence lives only in request-local server tool results. Private input deltas, results, paths, provider metadata, error details and reasoning never pass through to the client. Public widget output is reconstructed from server-owned post/timeline data rather than forwarded blindly. Request history is text-only, including the `originalMessages` passed to the SDK. The stream uses a deny-by-default event projection and only emits allowlisted citation labels, public URLs, numeric metadata and safe status summaries. Citation IDs are allocated once per request and checked against that registry.
 
+Private citation titles and sections use a presentation-only label projection before reaching either the answer model or the browser. Preparation headings are presented as neutral project labels (for example, "Project summary" and "Technical Q&A"). Original evidence, source files, retrieval metadata and published blog titles remain intact; label changes require no re-embedding.
+
+Broad project introductions use curated facts from `data/profile.ts` and present professional work before side projects. `searchKnowledge` supports `work` and `side_project` scopes, applied before recall/reranking alongside eligibility checks, so long side-project documents cannot crowd out professional sources. The work scope covers the approved ES, DTCC, EBM and Datagate documents; the side-project scope covers TRPGHub documents and its published post-mortem. Unscoped technical search remains unchanged. This categorization is a server-side catalog view over existing snapshots, not a new embedding version.
+
+Answer style separates established role facts from uncertain technical claims: the public TRPGHub post and profile establish engineering ownership and its unlaunched status, while unverified benchmark numbers and team-only contributions remain qualified. Missing detail in a retrieved excerpt does not override an explicit profile fact. General introductions should not be framed as a source audit or routinely end in an email referral.
+
 This boundary protects raw source objects and operational fields, not the secrecy of facts explicitly approved for public answers. Repeated answers can reveal those approved facts. Genuine secrets must not enter the public-answer index.
 
 ## Cost and configuration

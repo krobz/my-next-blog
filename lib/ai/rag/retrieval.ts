@@ -2,14 +2,30 @@ import { countTokens } from './chunking'
 import { ragConfig } from './config'
 import { createEmbedder, createReranker } from './providers'
 import { createRagStore } from './store'
+import { citationLabels } from './citation-labels'
 import type {
   ChildChunk,
   Embedder,
   Evidence,
+  ParentChunk,
   RagSnapshot,
   Reranker,
   RetrievalResult,
 } from './types'
+
+export type KnowledgeScope = 'all' | 'work' | 'side_project'
+const WORK_DOCUMENT_IDS = new Set(['es', 'dtcc', 'ebm', 'datagate'])
+const TRPG_BLOG_ID = 'blog-more-than-vibe-coding-why-my-app-never-made-it-to-launch'
+
+function matchesScope(parent: ParentChunk, scope: KnowledgeScope): boolean {
+  if (scope === 'all') return true
+  if (scope === 'work')
+    return parent.source === 'private' && WORK_DOCUMENT_IDS.has(parent.documentId)
+  return (
+    (parent.source === 'private' && parent.documentId.startsWith('trpg-')) ||
+    (parent.source === 'blog' && parent.documentId === TRPG_BLOG_ID)
+  )
+}
 
 const STOP = new Set(
   'a an the and or of to in is are was for with how what why does do he his this that'.split(' ')
@@ -76,6 +92,7 @@ export async function retrieveFromSnapshot(
   query: string,
   options: {
     lexicalQuery?: string
+    scope?: KnowledgeScope
     embed: Embedder
     rerank: Reranker
     signal?: AbortSignal
@@ -95,7 +112,8 @@ export async function retrieveFromSnapshot(
         (p) =>
           p.allowPublicAnswer &&
           docEligibility.get(p.documentId)?.allowPublicAnswer &&
-          p.version === docEligibility.get(p.documentId)?.version
+          p.version === docEligibility.get(p.documentId)?.version &&
+          matchesScope(p, options.scope ?? 'all')
       )
       .map((p) => [p.id, p])
   )
@@ -196,8 +214,7 @@ export async function retrieveFromSnapshot(
     const text = options.expandParents === false ? hit.child.text : parent.text
     const citation = {
       id: `S${evidence.length + 1}`,
-      title: parent.title,
-      section: parent.headingPath.join(' > '),
+      ...citationLabels(parent),
       ...(parent.source === 'blog' && parent.url?.startsWith('/blog/') ? { url: parent.url } : {}),
     }
     const tokens = countTokens(
@@ -239,7 +256,7 @@ export async function retrieveFromSnapshot(
 let store: ReturnType<typeof createRagStore> | undefined
 export async function retrieveKnowledge(
   query: string,
-  options: { lexicalQuery?: string; signal?: AbortSignal } = {}
+  options: { lexicalQuery?: string; scope?: KnowledgeScope; signal?: AbortSignal } = {}
 ): Promise<RetrievalResult> {
   const startedAt = Date.now()
   const config = ragConfig()

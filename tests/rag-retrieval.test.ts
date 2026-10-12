@@ -73,3 +73,88 @@ test('provider failure is explicit, strict rerank policy yields no evidence', as
   })
   assert.equal(strict.evidence.length, 0)
 })
+test('work scope filters a dominant side-project corpus before reranking and parent expansion', async () => {
+  const snap = snapshot([
+    document('es', '# Elasticsearch\n\nParallel scans and bulk indexing support migrations.'),
+    document('dtcc', '# DTCC\n\nA Semaphore bounds Kafka tasks.'),
+    document('ebm', '# Revoked work\n\nThis project must not reach the provider.'),
+    document('datagate', '# Stale work\n\nThis project has been superseded.'),
+    ...Array.from({ length: 10 }, (_, i) =>
+      document(`trpg-part-${i}`, `# TRPGHub\n\nTRPGHub marketplace feature ${i}.`)
+    ),
+  ])
+  snap.documents.find((d) => d.id === 'ebm')!.allowPublicAnswer = false
+  snap.documents.find((d) => d.id === 'datagate')!.version = 'new-version'
+  for (const child of snap.children)
+    if (!child.documentId.startsWith('trpg-')) child.embedding = [0, 1, 0]
+  const unrestricted = await retrieveFromSnapshot(snap, 'TRPGHub marketplace', { embed, rerank })
+  assert.ok(unrestricted.evidence.every((e) => e.text.includes('TRPGHub')))
+  const providerDocuments: string[] = []
+  let candidateIds: string[] = []
+  const scoped = await retrieveFromSnapshot(snap, 'TRPGHub marketplace', {
+    scope: 'work',
+    embed,
+    rerank: async (q, docs, limit) => {
+      providerDocuments.push(...docs)
+      return rerank(q, docs, limit)
+    },
+    onRanking: (candidates) => {
+      candidateIds = candidates.map((c) => c.documentId)
+    },
+  })
+  assert.deepEqual(candidateIds.sort(), ['dtcc', 'es'])
+  assert.equal(providerDocuments.length, 2)
+  assert.ok(providerDocuments.every((text) => !/TRPGHub|Revoked|Stale/.test(text)))
+  assert.equal(scoped.evidence.length, 2)
+  assert.ok(scoped.evidence.every((e) => /Parallel scans|Semaphore/.test(e.text)))
+})
+test('side-project scope includes its public authorship post and excludes unrelated sources', async () => {
+  const trpgPost = {
+    ...document(
+      'blog-more-than-vibe-coding-why-my-app-never-made-it-to-launch',
+      '# TRPGHub post\n\nI owned engineering and infrastructure.'
+    ),
+    source: 'blog' as const,
+    url: '/blog/more-than-vibe-coding-why-my-app-never-made-it-to-launch',
+  }
+  const snap = snapshot([
+    document('trpg-architecture', '# TRPGHub architecture\n\nA mobile marketplace.'),
+    trpgPost,
+    document('es', '# Work\n\nElasticsearch migration.'),
+    document('unrelated', '# Other\n\nAn unrelated project.'),
+    { ...document('trpg-unrelated-blog', '# Unrelated blog\n\nOther writing.'), source: 'blog' },
+    document('trpg-revoked', '# Revoked\n\nThis project is no longer approved.'),
+  ])
+  snap.documents.find((d) => d.id === 'trpg-revoked')!.allowPublicAnswer = false
+  let providerDocuments: string[] = []
+  const result = await retrieveFromSnapshot(snap, 'What has krob built?', {
+    scope: 'side_project',
+    embed,
+    rerank: async (q, docs, limit) => {
+      providerDocuments = docs
+      return rerank(q, docs, limit)
+    },
+  })
+  assert.equal(providerDocuments.length, 2)
+  assert.ok(providerDocuments.every((text) => text.includes('TRPGHub')))
+  assert.equal(result.evidence.length, 2)
+  assert.ok(result.evidence.some((e) => e.citation.url === trpgPost.url))
+})
+test('a scope with no eligible documents calls neither retrieval provider', async () => {
+  const snap = snapshot([document('dtcc'), document('trpg-architecture')])
+  snap.documents.find((d) => d.id === 'dtcc')!.allowPublicAnswer = false
+  let providerCalls = 0
+  const result = await retrieveFromSnapshot(snap, 'DTCC Semaphore', {
+    scope: 'work',
+    embed: async () => {
+      providerCalls++
+      return embed()
+    },
+    rerank: async (q, docs, limit) => {
+      providerCalls++
+      return rerank(q, docs, limit)
+    },
+  })
+  assert.equal(providerCalls, 0)
+  assert.equal(result.evidence.length, 0)
+})
