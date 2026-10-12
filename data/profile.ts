@@ -36,6 +36,30 @@ export const timeline: TimelineItem[] = [
   },
 ]
 
+// Short, approved project facts keep broad introductions representative of the work.
+// ES/DTCC: author's project descriptions. TRPGHub: the published product post-mortem.
+// Employer attribution and benchmark numbers need separate supporting evidence.
+export const projects = [
+  {
+    kind: 'work',
+    name: 'DTCC S3-to-Kafka pipeline',
+    summary:
+      'Designed a pipeline that reads large financial CSV files from S3, transforms rows to XML and sends them to Kafka, using Java virtual threads and bounded backpressure.',
+  },
+  {
+    kind: 'work',
+    name: 'Elasticsearch migration',
+    summary: 'Designed an Elasticsearch migration flow using parallel scanning and bulk requests.',
+  },
+  {
+    kind: 'side project',
+    name: 'TRPGHub',
+    summary:
+      'Owned engineering and infrastructure for a tabletop RPG marketplace, using Java/Spring Boot and React Native with AI-assisted development. Co-founders handled product, market and regulation. The app was built but never launched.',
+    postSlug: 'more-than-vibe-coding-why-my-app-never-made-it-to-launch',
+  },
+] as const
+
 export const skills: Record<string, string[]> = {
   'Backend & data': [
     'Backend systems',
