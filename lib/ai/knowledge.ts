@@ -335,10 +335,10 @@ export function getProfileContext() {
     ...timeline.map(describe),
     '',
     'Selected projects (work before side projects):',
-    ...projects.map(
-      (project) =>
-        `- [${project.kind}] ${project.name}: ${project.summary}${'postSlug' in project ? ` Public write-up: /blog/${project.postSlug}` : ''}`
-    ),
+    ...projects.flatMap((project) => [
+      `- [${project.kind}] ${project.name}${'org' in project ? ` at ${project.org}` : project.kind === 'work' ? ' (employer unspecified)' : ''}: ${project.summary}${'postSlug' in project ? ` Public write-up: /blog/${project.postSlug}` : ''}`,
+      ...('details' in project ? project.details.map((detail) => `  ${detail}`) : []),
+    ]),
     '',
     'Skills:',
     ...Object.entries(skills).map(([group, items]) => `- ${group}: ${items.join(', ')}`),
